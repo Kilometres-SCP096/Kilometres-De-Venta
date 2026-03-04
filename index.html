@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Venta AI Hub — Kilometres & Snow</title>
+    <meta name="description"
+        content="Venta AI Hub: Chat with Kilometres & Snow De Venta personas, generate images, and convert voices — powered by Puter.js serverless AI." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://js.puter.com/v2/"></script>
+</head>
+
+<body>
+
+    <!-- ═══ BOOT SPLASH ═══ -->
+    <div id="splash-screen">
+        <div class="splash-orb"></div>
+        <div class="splash-content">
+            <h1 class="splash-title">VENTA<span>AI</span></h1>
+            <p class="splash-sub">Initializing neural bridge…</p>
+            <div class="splash-bar">
+                <div class="splash-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MAIN APP SHELL ═══ -->
+    <div id="app" class="app hidden">
+
+        <!-- ─── TOP BAR ─── -->
+        <header id="top-bar">
+            <div class="top-bar-left">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="14" stroke="url(#lg)" stroke-width="2.5" />
+                        <path d="M10 20 L16 8 L22 20" stroke="url(#lg)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <defs>
+                            <linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+                                <stop stop-color="#a020f0" />
+                                <stop offset="1" stop-color="#e040ff" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="logo-text">Venta<span class="accent">AI</span></span>
+            </div>
+            <div class="persona-toggle" id="persona-toggle">
+                <button class="persona-btn active" data-persona="kilometres" id="btn-km">
+                    <span class="persona-dot km-dot"></span>KM
+                </button>
+                <button class="persona-btn" data-persona="snow" id="btn-snow">
+                    <span class="persona-dot snow-dot"></span>Snow
+                </button>
+                <div class="persona-slider" id="persona-slider"></div>
+            </div>
+        </header>
+
+        <!-- ═══ TAB PANELS ═══ -->
+
+        <!-- ──── THE NEXUS (Chat) ──── -->
+        <section id="panel-chat" class="panel active">
+            <div class="panel-controls">
+                <div class="control-row">
+                    <label>Model</label>
+                    <select id="chat-model">
+                        <optgroup label="OpenAI / Reasoning">
+                            <option value="openai/gpt-oss-120b">GPT-OSS 120B</option>
+                            <option value="openai/gpt-oss-120b:exacto">GPT-OSS 120B Exacto</option>
+                            <option value="openai/gpt-oss-20b">GPT-OSS 20B</option>
+                            <option value="openai/gpt-oss-20b:free">GPT-OSS 20B Free</option>
+                            <option value="openai/gpt-oss-safeguard-20b">GPT-OSS Safeguard 20B</option>
+                        </optgroup>
+                        <optgroup label="Gemini">
+                            <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
+                            <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+                            <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
+                            <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                            <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option>
+                            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                        </optgroup>
+                        <optgroup label="Grok (XAI)">
+                            <option value="x-ai/grok-4-1-fast">Grok 4.1 Fast</option>
+                            <option value="x-ai/grok-4">Grok 4</option>
+                            <option value="x-ai/grok-code-fast-1">Grok Code Fast 1</option>
+                            <option value="x-ai/grok-3">Grok 3</option>
+                            <option value="x-ai/grok-2-vision-1212">Grok 2 Vision</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <div class="chat-window" id="chat-window">
+                <div class="chat-welcome">
+                    <div class="welcome-orb"></div>
+                    <h2>The Nexus</h2>
+                    <p>Choose your persona above, select a model, and start chatting.</p>
+                </div>
+            </div>
+
+            <!-- Chat input area -->
+            <div class="chat-input-area" id="chat-input-area">
+                <div class="file-attach-row" id="file-attach-row" style="display:none;">
+                    <span class="file-chip" id="file-chip-name"></span>
+                    <button class="file-remove-btn" id="file-remove-btn">&times;</button>
+                </div>
+                <div class="input-row">
+                    <label class="attach-btn" for="chat-file-input" title="Attach image for analysis">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+                        </svg>
+                    </label>
+                    <input type="file" id="chat-file-input" accept="image/*" style="display:none;" />
+                    <textarea id="chat-input" rows="1" placeholder="Ask Kilometres or Snow anything…"></textarea>
+                    <button id="chat-send-btn" class="send-btn" title="Send">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──── THE VISIONARY (Image Gen) ──── -->
+        <section id="panel-visionary" class="panel">
+            <div class="panel-controls">
+                <div class="control-row">
+                    <label>Model</label>
+                    <select id="img-model">
+                        <optgroup label="Grok">
+                            <option value="grok-2-image" data-provider="xai">Grok 2 Image</option>
+                        </optgroup>
+                        <optgroup label="GPT">
+                            <option value="gpt-image-1.5">GPT Image 1.5</option>
+                            <option value="gpt-image-1" selected>GPT Image 1</option>
+                            <option value="gpt-image-1-mini">GPT Image 1 Mini</option>
+                        </optgroup>
+                        <optgroup label="Gemini">
+                            <option value="gemini-2.5-flash-image-preview">Gemini 2.5 Flash Image</option>
+                        </optgroup>
+                        <optgroup label="DALL-E">
+                            <option value="dall-e-3">DALL-E 3</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="control-row" id="quality-row">
+                    <label>Quality</label>
+                    <div class="quality-pills">
+                        <button class="pill" data-q="low">Low</button>
+                        <button class="pill active" data-q="medium">Med</button>
+                        <button class="pill" data-q="high">High</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visionary-gallery" id="visionary-gallery">
+                <div class="gallery-placeholder">
+                    <div class="placeholder-orb"></div>
+                    <h2>The Visionary</h2>
+                    <p>Describe your vision below and watch it materialize.</p>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="input-row">
+                    <textarea id="img-prompt" rows="1" placeholder="Describe the image you want to create…"></textarea>
+                    <button id="img-gen-btn" class="send-btn" title="Generate">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──── THE ECHO (Audio) ──── -->
+        <section id="panel-echo" class="panel">
+            <div class="panel-controls echo-controls">
+                <div class="echo-mode-toggle">
+                    <button class="echo-mode-btn active" data-mode="tts" id="tts-mode-btn">Text → Speech</button>
+                    <button class="echo-mode-btn" data-mode="s2s" id="s2s-mode-btn">Voice Convert</button>
+                </div>
+                <div class="control-row">
+                    <label>Voice</label>
+                    <select id="echo-voice">
+                        <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
+                        <option value="Xb7hH8MSUJpSbSDYk0k2">Alice</option>
+                        <option value="ErXwobaYiN019PkySvjV">Antoni</option>
+                        <option value="VR6AewLTigWG4xSOukaG">Arnold</option>
+                        <option value="pqHfZKP75CvOlQylNhV4">Bill</option>
+                        <option value="nPczCjzI2devNBz1zQrb">Brian</option>
+                        <option value="LcfcDJNUP1GQjkzn1xUU">Emily</option>
+                        <option value="21m00Tcm4TlvDq8ikWAM" selected>Rachel</option>
+                        <option value="knrPHWnBmmDHMoiMeP3l">Santa Claus</option>
+                    </select>
+                </div>
+                <div class="control-row">
+                    <label>Format</label>
+                    <select id="echo-format">
+                        <option value="mp3_44100_128">MP3 128kbps</option>
+                        <option value="mp3_44100_192" selected>MP3 192kbps</option>
+                        <option value="pcm_24000">PCM 24kHz</option>
+                        <option value="ulaw_8000">μ-Law 8kHz</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="echo-output-area" id="echo-output-area">
+                <div class="gallery-placeholder">
+                    <div class="placeholder-orb echo-orb"></div>
+                    <h2>The Echo</h2>
+                    <p>Create speech from text or convert voices from uploaded audio.</p>
+                </div>
+            </div>
+
+            <!-- TTS input -->
+            <div class="chat-input-area" id="tts-input-area">
+                <div class="input-row">
+                    <textarea id="tts-text" rows="1" placeholder="Type text to speak aloud…"></textarea>
+                    <button id="tts-btn" class="send-btn" title="Speak">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                            <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- S2S input -->
+            <div class="chat-input-area" id="s2s-input-area" style="display:none;">
+                <div class="input-row">
+                    <label class="attach-btn" for="s2s-file-input" title="Upload audio file">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+                        </svg>
+                    </label>
+                    <input type="file" id="s2s-file-input" accept="audio/*" style="display:none;" />
+                    <span class="s2s-file-label" id="s2s-file-label">No file selected</span>
+                    <button id="s2s-btn" class="send-btn" title="Convert Voice">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="23 4 23 10 17 10" />
+                            <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ BOTTOM NAV ═══ -->
+        <nav id="bottom-nav">
+            <button class="nav-btn active" data-tab="chat" id="nav-chat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                </svg>
+                <span>Chat</span>
+            </button>
+            <button class="nav-btn" data-tab="visionary" id="nav-visionary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="3" />
+                    <line x1="12" y1="2" x2="12" y2="6" />
+                    <line x1="12" y1="18" x2="12" y2="22" />
+                    <line x1="2" y1="12" x2="6" y2="12" />
+                    <line x1="18" y1="12" x2="22" y2="12" />
+                </svg>
+                <span>Visionary</span>
+            </button>
+            <button class="nav-btn" data-tab="echo" id="nav-echo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                    <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="23" />
+                    <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+                <span>Echo</span>
+            </button>
+        </nav>
+
+    </div><!-- /app -->
+
+    <script src="app.js"></script>
+</body>
+
+</html>
